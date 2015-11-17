@@ -1,0 +1,56 @@
+; This file can be used to define your own interaction
+; matrix and update matrix.
+; SYNTAX:
+; <source> <interaction> <priority>
+; OR: <source> <interaction> <priority> UPDATE
+; OR: <source> <interaction> <priority> <target> <distance> [<target-selection-policy>]
+;
+; By default, each line is added to the appropriate matrix.
+; Lines starting with a '-' character are removed from the appropriate matrix.
+; Lines starting with a '+' character are added to the appropriate matrix ('+' is optional).
+;
+; NB1: this file is read as a CSV file, thus you can use any field separator char 
+; since you put it in the second argument of the ioda:load-matrices command.
+;
+; NB2: any non-letter, non-digit, non '+'/'-' character at the beginning
+; of the line introduces a comment line. Empty lines are ignored.
+;
+
+
+doors		Open		 0 	UPDATE
+
+diamonds	StartFalling	 0 	UPDATE
+diamonds	Fall		 0 	
+diamonds	StopFalling 	 10 	walls		 1 	
+diamonds	StopFalling 	 10 	dirt		 1 	
+diamonds	StopFalling 	 10 	diamonds 	 1 
+diamonds	StopFalling 	 10 	rocks		 1 
+diamonds	StopFalling 	 10 	doors		 1 
+diamonds	Explode 	 50 	monsters	 1 
+diamonds	Explode 	 50 	heros		 1 
+
+rocks		StartFalling	 0 	UPDATE
+rocks		Fall 		 0 
+rocks		StopFalling 	 10 	walls		 1 	
+rocks		StopFalling 	 10 	dirt		 1 	
+rocks		StopFalling 	 10 	diamonds 	 1 
+rocks		StopFalling 	 10 	rocks		 1 
+rocks		StopFalling 	 10 	doors		 1 
+rocks		Explode 	 50 	monsters	 1 
+rocks		Explode 	 50 	heros		 1 
+
+monsters	Advance		 10 
+monsters	Turn		 20 	walls		 1 
+monsters	Turn		 20 	dirt		 1 
+monsters	Turn		 20 	diamonds	 1 
+monsters	Turn		 20 	rocks		 1 
+monsters	Turn		 20 	doors		 1 
+monsters	Turn		 20 	monsters	 1 
+monsters	Explode		 30 	heros		 1 
+
+heros		StopMoving	 100 	UPDATE
+heros		ReadOrders	 90 	UPDATE
+heros		Advance		 10 
+heros		Dig		 20 	dirt		 1 
+heros		Collect		 80    	diamonds	 1 
+heros		Explode		 100    monsters	 0 

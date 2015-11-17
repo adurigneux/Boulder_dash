@@ -1,0 +1,77 @@
+; This file can be used to define your own interactions.
+; SYNTAX:
+; [EXCLUSIVE|PARALLEL] INTERACTION <name>
+; [TRIGGER <tr1> ... <tr_n>]
+; [CONDITION <cond1> ... <cond_n>]
+; [ACTIONS <act1> ... <act_n>]
+; END
+;
+; NB1: tr_i and cond_i are abstract condition primitives,
+; which must be implemented by concrete reporters, while
+; act_i are abstract action primitives, which must be
+; implemented by concrete commands.
+;
+; NB2: any non-letter, non-digit character at the beginning
+; of the line introduces a comment line. Empty lines are ignored.
+;
+
+parallel interaction Open
+  trigger	     objectives-fulfilled?
+  condition	     closed?
+  actions	     change-state
+end
+	 
+parallel interaction StartFalling
+  trigger	     nothing-below?
+  condition	     not:moving?
+  actions	     start-moving
+end
+
+parallel interaction Fall
+  condition	     moving?
+  actions	     move-down
+end
+
+parallel interaction StopFalling
+  condition	     moving? 
+  actions	     stop-moving
+end
+
+parallel interaction Advance
+  condition 	     nothing-ahead? moving?
+  actions	     move-forward
+end
+
+parallel interaction Turn
+  trigger	     moving?
+  actions	     turn-right-or-left
+end
+
+parallel interaction Dig
+  trigger	     target-ahead?
+  condition	     moving? 
+  actions	     target:die move-forward
+end
+
+parallel interaction StopMoving
+  trigger	     needs-to-stop?
+  condition	     moving?
+  actions	     stop-moving
+end
+
+parallel interaction ReadOrders
+  trigger	     message-received?
+  actions	     handle-messages
+end
+
+exclusive interaction Explode
+  condition	     moving?
+  actions 	     create-blast target:die die
+end
+
+parallel interaction Collect
+  trigger	     target-ahead?
+  condition 	     moving?
+  actions	     target:die increase-score move-forward
+end
+
