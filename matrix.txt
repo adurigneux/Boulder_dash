@@ -54,3 +54,4 @@ heros		Advance		 10
 heros		Dig		 20 	dirt		 1 
 heros		Collect		 80    	diamonds	 1 
 heros		Explode		 100    monsters	 0 
+heros		MoveRock	 90     rocks		 1 

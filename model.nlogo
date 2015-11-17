@@ -11,7 +11,7 @@ breed [diamonds diamond]
 breed [dirt]
 breed [blast]
 
-globals       [ score nb-to-collect countdown ]
+globals       [ score nb-to-collect countdown directionOfHero]
 heros-own     [ moving? orders ]
 diamonds-own  [ moving? ]
 monsters-own  [ moving? right-handed? ]
@@ -269,6 +269,14 @@ to-report rocks::moving?
   report default::moving?
 end
 
+to-report rocks::nothing-ahead?
+  report default::nothing-ahead? 1
+end
+
+to rocks::move-forward
+  default::move-forward
+end
+
 to rocks::start-moving
   default::start-moving
 end
@@ -368,7 +376,7 @@ to heros::handle-messages
     [ let m ?
       ifelse (m = "STOP")
         [ set moving? false]
-        [ set heading m set moving? true ]
+        [ set heading m set moving? true set directionOfHero m]
     ]
   set orders []
 end
@@ -398,11 +406,11 @@ end
 GRAPHICS-WINDOW
 482
 10
-1242
-791
+727
+221
 -1
 -1
-30.0
+36.0
 1
 10
 1
@@ -413,8 +421,8 @@ GRAPHICS-WINDOW
 0
 1
 0
-24
--24
+4
+-4
 0
 1
 1
@@ -586,7 +594,7 @@ CHOOSER
 level
 level
 "level0" "level1" "level2"
-1
+0
 
 MONITOR
 287
@@ -609,6 +617,30 @@ step-by-step?
 0
 1
 -1000
+
+BUTTON
+14
+565
+155
+598
+show primitives
+setup\noutput-print ioda:primitives-to-write
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+OUTPUT
+18
+617
+461
+743
+12
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -781,7 +813,6 @@ false
 0
 Polygon -13345367 true false 15 90 60 30 240 30 285 90 285 150 150 300 15 150
 Polygon -11221820 false false 60 30 240 30 285 90 285 150 150 300 15 150 15 90
-Line -11221820 false 30 150 30 150
 Line -11221820 false 15 150 285 150
 Line -11221820 false 15 90 285 90
 Line -11221820 false 120 30 90 90

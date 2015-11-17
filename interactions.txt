@@ -75,3 +75,8 @@ parallel interaction Collect
   actions	     target:die increase-score move-forward
 end
 
+parallel interaction MoveRock
+  trigger	     target-ahead?
+  condition 	     nothing-ahead-rocks? moving? target:direction-of-rock-is-ok?
+  actions	     target:set-direction-of-hero target:move-forward move-forward
+end
