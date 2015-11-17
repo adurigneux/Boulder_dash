@@ -1,0 +1,5 @@
+-explosions quand pierre tombe sur monstre ou sur le hero
+-les pierres roulent quand il ya un vide a cote et en dessous de ce meme coté
+-explosions avec les monstres et le hero
+-creation de diams aleatoires
+

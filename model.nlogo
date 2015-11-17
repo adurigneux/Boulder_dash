@@ -269,13 +269,23 @@ to-report rocks::moving?
   report default::moving?
 end
 
+to-report rocks::direction-of-rock-is-ok?
+  report (directionOfHero != 0)
+end
+
 to-report rocks::nothing-ahead?
   report default::nothing-ahead? 1
+end
+
+to rocks::set-direction-of-hero
+  set heading directionOfHero
 end
 
 to rocks::move-forward
   default::move-forward
 end
+
+
 
 to rocks::start-moving
   default::start-moving
@@ -341,6 +351,18 @@ end
 
 
 
+;;;blast
+
+to blast::filter-neighbors
+  ioda:filter-neighbors-on-patches (patch-set patch-here)
+end
+
+to blast::die
+  ioda:die
+end
+
+
+
 ; hero-related primitives
 
 to send-message [ value ]
@@ -354,6 +376,11 @@ end
 to-report heros::nothing-ahead?
   report (default::nothing-ahead? 1) or (any? (doors-on patch-ahead 1) with [ doors::open? ])
 end
+
+to-report heros::nothing-ahead-rocks?
+  report default::nothing-ahead? 2
+end
+
 
 to-report heros::target-ahead?
   report ([patch-here] of ioda:my-target) = (patch-ahead 1)
@@ -406,8 +433,8 @@ end
 GRAPHICS-WINDOW
 482
 10
-727
-221
+1392
+941
 -1
 -1
 36.0
@@ -421,8 +448,8 @@ GRAPHICS-WINDOW
 0
 1
 0
-4
--4
+24
+-24
 0
 1
 1
@@ -594,7 +621,7 @@ CHOOSER
 level
 level
 "level0" "level1" "level2"
-0
+1
 
 MONITOR
 287
@@ -641,6 +668,17 @@ OUTPUT
 461
 743
 12
+
+MONITOR
+312
+379
+428
+424
+NIL
+directionOfHero
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?

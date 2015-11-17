@@ -48,10 +48,16 @@ monsters	Turn		 20 	doors		 1
 monsters	Turn		 20 	monsters	 1 
 monsters	Explode		 30 	heros		 1 
 
+blast		Kill	100	walls		 1
+blast		Kill	100	heros		 1
+blast		Kill	100	monsters	 1
+blast		Kill	100	rocks		 1
+blast		Kill	100	dirt		 1
+
 heros		StopMoving	 100 	UPDATE
 heros		ReadOrders	 90 	UPDATE
 heros		Advance		 10 
 heros		Dig		 20 	dirt		 1 
 heros		Collect		 80    	diamonds	 1 
 heros		Explode		 100    monsters	 0 
-heros		MoveRock	 90     rocks		 1 
+heros		MoveRock	 70     rocks		 1 

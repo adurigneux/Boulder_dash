@@ -64,9 +64,9 @@ parallel interaction ReadOrders
   actions	     handle-messages
 end
 
-exclusive interaction Explode
+parallel interaction Explode
   condition	     moving?
-  actions 	     create-blast target:die die
+  actions 	     create-blast target:die die 
 end
 
 parallel interaction Collect
@@ -80,3 +80,11 @@ parallel interaction MoveRock
   condition 	     nothing-ahead-rocks? moving? target:direction-of-rock-is-ok?
   actions	     target:set-direction-of-hero target:move-forward move-forward
 end
+
+
+parallel interaction Kill
+  actions	     target:die die
+end
+
+
+
