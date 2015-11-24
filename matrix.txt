@@ -53,6 +53,7 @@ blast		Kill	100	heros		 1
 blast		Kill	100	monsters	 1
 blast		Kill	100	rocks		 1
 blast		Kill	100	dirt		 1
+blast		Kill	100	diamonds	 1
 
 heros		StopMoving	 100 	UPDATE
 heros		ReadOrders	 90 	UPDATE

@@ -247,6 +247,7 @@ end
 to diamonds::create-blast
   let dm? ifelse-value ([breed] of ioda:my-target = monsters) [ [right-handed?] of ioda:my-target ] [ true ]
   hatch-blast 1 [ init-blast dm? ]
+  blast::generate-diamonds
 end
 
 to diamonds::die
@@ -302,6 +303,7 @@ end
 to rocks::create-blast
   let dm? ifelse-value ([breed] of ioda:my-target = monsters) [ [right-handed?] of ioda:my-target ] [ true ]
   hatch-blast 1 [ init-blast dm? ]
+  blast::generate-diamonds
 end
 
 to rocks::die
@@ -341,6 +343,8 @@ end
 to monsters::create-blast
   let dm? ifelse-value ([breed] of ioda:my-target = heros) [ true ] [ right-handed? ]
   hatch-blast 1 [ init-blast dm? ]
+
+  blast::generate-diamonds
 end
 
 ; dirt-related primitives
@@ -358,9 +362,28 @@ to blast::filter-neighbors
 end
 
 to blast::die
+  ; blast::generate-diamonds
   ioda:die
 end
 
+
+to blast::generate-diamonds
+  blast::filter-neighbors
+  ask neighbors [ show color ]
+  set nb-to-collect count diamonds
+  show neighbors
+ ; hatch-diamonds 1
+ ; hatch-diamonds 1 [ init-diamond move-to patch-at 0 1 ]
+ ; hatch-diamonds 1 [ init-diamond move-to patch-at -1 -1 ]
+  ;;hatch-diamonds 1 [ init-diamond move-to patch-at 1 1 ]
+ ; hatch-diamonds 1 [ init-diamond move-to patch-at -1 0 ]
+  ;hatch-diamonds 1 [ init-diamond move-to patch-at 1 0 ]
+  ;hatch-diamonds 1 [ init-diamond move-to patch-at -1 1 ]
+ ; hatch-diamonds 1 [ init-diamond move-to patch-at 1 -1 ]
+
+
+
+end
 
 
 ; hero-related primitives
