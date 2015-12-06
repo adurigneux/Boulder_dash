@@ -50,8 +50,8 @@ monsters	Turn		 20 	doors		 1
 monsters	Turn		 20 	monsters	 1 
 monsters	Explode		 30 	heros		 1 
 
-blast       CreateDiamonds   90       UPDATE
-blast       Kill             100      UPDATE
+blast		Kill		100		UPDATE
+blast		CreateDiamonds		90		UPDATE
 
 heros		StopMoving	 100 	UPDATE
 heros		ReadOrders	 90 	UPDATE

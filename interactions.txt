@@ -88,20 +88,20 @@ parallel interaction Kill
 end
 ;; creation des diams
 parallel interaction CreateDiamonds
-  condition      diamond-maker?
-  actions        create-diamonds die
+  condition		diamond-maker?
+  actions		create-diamonds die
 end
 
 
 ;;faire tomber les pierres quand il y a du vide a coté
 parallel interaction RollDownRight
-  condition	     not:moving? nothing-right? nothing-down-right?
-  actions	       roll-right
+  condition		not:moving? nothing-right? nothing-down-right?
+  actions		roll-right
 end
 
 parallel interaction RollDownLeft
-  condition	     not:moving? nothing-left? nothing-down-left?
-  actions	       roll-left
+  condition		not:moving? nothing-left? nothing-down-left?
+  actions		roll-left
 end
 
 
