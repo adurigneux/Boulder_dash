@@ -75,15 +75,33 @@ parallel interaction Collect
   actions	     target:die increase-score move-forward
 end
 
+;;;pour bouger la pierre via le hero
 parallel interaction MoveRock
   trigger	     target-ahead?
   condition 	     nothing-ahead-rocks? moving? target:direction-of-rock-is-ok?
   actions	     target:set-direction-of-hero target:move-forward move-forward
 end
 
-
+;; pour lesplosion 
 parallel interaction Kill
-  actions	     target:die die
+    actions      kill die
+end
+;; creation des diams
+parallel interaction CreateDiamonds
+  condition      diamond-maker?
+  actions        create-diamonds die
+end
+
+
+;;faire tomber les pierres quand il y a du vide a coté
+parallel interaction RollDownRight
+  condition	     not:moving? nothing-right? nothing-down-right?
+  actions	       roll-right
+end
+
+parallel interaction RollDownLeft
+  condition	     not:moving? nothing-left? nothing-down-left?
+  actions	       roll-left
 end
 
 

@@ -11,7 +11,7 @@ breed [diamonds diamond]
 breed [dirt]
 breed [blast]
 
-globals       [ score nb-to-collect countdown directionOfHero]
+globals       [ score nb-to-collect countdown directionOfHero headingRocksValueTemp]
 heros-own     [ moving? orders ]
 diamonds-own  [ moving? ]
 monsters-own  [ moving? right-handed? ]
@@ -247,7 +247,6 @@ end
 to diamonds::create-blast
   let dm? ifelse-value ([breed] of ioda:my-target = monsters) [ [right-handed?] of ioda:my-target ] [ true ]
   hatch-blast 1 [ init-blast dm? ]
-  blast::generate-diamonds
 end
 
 to diamonds::die
@@ -282,11 +281,57 @@ to rocks::set-direction-of-hero
   set heading directionOfHero
 end
 
+to-report rocks::nothing-right?
+  set headingRocksValueTemp heading
+  face patch-at 1 0
+    ifelse rocks::nothing-ahead?
+    [ report true ]
+    [ set heading headingRocksValueTemp
+      report false ]
+end
+
+to-report rocks::nothing-left?
+  set headingRocksValueTemp heading
+  face patch-at -1 0
+    ifelse rocks::nothing-ahead?
+    [ report true ]
+    [ set heading headingRocksValueTemp
+      report false ]
+end
+
+to-report rocks::nothing-down-left?
+  set headingRocksValueTemp heading
+  face patch-at -1 -1
+    ifelse rocks::nothing-ahead?
+    [ report true ]
+    [ set heading headingRocksValueTemp
+      report false ]
+end
+
+to-report rocks::nothing-down-right?
+  set headingRocksValueTemp heading
+  face patch-at 1 -1
+    ifelse rocks::nothing-ahead?
+    [ report true ]
+    [ set heading headingRocksValueTemp
+      report false ]
+end
+
+to rocks::roll-right
+  face patch-at 1 0
+  rocks::start-moving
+  rocks::move-forward
+end
+
+to rocks::roll-left
+  face patch-at -1 0
+  rocks::start-moving
+  rocks::move-forward
+end
+
 to rocks::move-forward
   default::move-forward
 end
-
-
 
 to rocks::start-moving
   default::start-moving
@@ -303,7 +348,6 @@ end
 to rocks::create-blast
   let dm? ifelse-value ([breed] of ioda:my-target = monsters) [ [right-handed?] of ioda:my-target ] [ true ]
   hatch-blast 1 [ init-blast dm? ]
-  blast::generate-diamonds
 end
 
 to rocks::die
@@ -343,8 +387,6 @@ end
 to monsters::create-blast
   let dm? ifelse-value ([breed] of ioda:my-target = heros) [ true ] [ right-handed? ]
   hatch-blast 1 [ init-blast dm? ]
-
-  blast::generate-diamonds
 end
 
 ; dirt-related primitives
@@ -357,33 +399,28 @@ end
 
 ;;;blast
 
-to blast::filter-neighbors
-  ioda:filter-neighbors-on-patches (patch-set patch-here)
+to blast::create-diamonds
+  ask neighbors [ sprout-diamonds 1 [ init-diamond ] ]
+  ask patch-here [ sprout-diamonds 1 [ init-diamond ] ]
+end
+
+to blast::kill
+  ask turtles-on neighbors
+    [ output-show breed
+      if (breed = walls and destructible? or breed != doors)
+      [ ioda:die ]
+    ]
+end
+
+to-report blast::diamond-maker?
+  report diamond-maker?
 end
 
 to blast::die
-  ; blast::generate-diamonds
   ioda:die
 end
 
 
-to blast::generate-diamonds
-  blast::filter-neighbors
-  ask neighbors [ show color ]
-  set nb-to-collect count diamonds
-  show neighbors
- ; hatch-diamonds 1
- ; hatch-diamonds 1 [ init-diamond move-to patch-at 0 1 ]
- ; hatch-diamonds 1 [ init-diamond move-to patch-at -1 -1 ]
-  ;;hatch-diamonds 1 [ init-diamond move-to patch-at 1 1 ]
- ; hatch-diamonds 1 [ init-diamond move-to patch-at -1 0 ]
-  ;hatch-diamonds 1 [ init-diamond move-to patch-at 1 0 ]
-  ;hatch-diamonds 1 [ init-diamond move-to patch-at -1 1 ]
- ; hatch-diamonds 1 [ init-diamond move-to patch-at 1 -1 ]
-
-
-
-end
 
 
 ; hero-related primitives
@@ -690,7 +727,7 @@ OUTPUT
 617
 461
 743
-12
+11
 
 MONITOR
 312
