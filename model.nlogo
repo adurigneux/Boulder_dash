@@ -11,7 +11,7 @@ breed [diamonds diamond]
 breed [dirt]
 breed [blast]
 
-globals       [ score nb-to-collect countdown directionOfHero headingRocksValueTemp]
+globals       [ score nb-to-collect countdown directionOfHero headingRocksValueTemp levelNumber]
 heros-own     [ moving? orders ]
 diamonds-own  [ moving? ]
 monsters-own  [ moving? right-handed? ]
@@ -19,6 +19,8 @@ rocks-own     [ moving? ]
 walls-own     [ destructible? ]
 doors-own     [ open? ]
 blast-own     [ strength diamond-maker? ]
+
+
 
 to setup
   clear-all
@@ -36,7 +38,7 @@ to go
   ifelse (not any? heros)
     [ ifelse (countdown = 0) [ user-message "GAME OVER !" stop ] [ set countdown countdown - 1 ]]
     [ if (all? heros [any? doors-here with [open?]])
-        [ user-message "CONGRATULATIONS !" stop ]
+        [ user-message "CONGRATULATIONS !" next-level ]
     ]
 
 end
@@ -55,6 +57,37 @@ to read-level [ filename ]
       set y y - 1 ]
   file-close
 end
+
+
+to next-level
+
+ clear-ticks
+  clear-turtles
+   clear-patches
+    clear-drawing
+     clear-all-plots
+      clear-output
+       reset-ticks
+  set levelNumber levelNumber + 1
+  set-default-shape walls "tile brick"
+  set-default-shape heros "person"
+  set-default-shape monsters "ghost"
+  set-default-shape doors "door-open"
+  set-default-shape rocks "rock"
+  set-default-shape diamonds "diamond"
+  set-default-shape dirt "dirt"
+  set-default-shape blast "star"
+  read-level (word "level" levelNumber ".txt")
+  set countdown 0
+  set nb-to-collect count diamonds
+
+
+  ioda:setup
+  ioda:set-metric "Moore"
+
+
+end
+
 
 to create-agent [ char ]
   ifelse (char = "X")
@@ -94,6 +127,7 @@ to init-world
   set-default-shape dirt "dirt"
   set-default-shape blast "star"
   read-level (word level ".txt")
+  set levelNumber read-from-string substring level 5 6
   set countdown 0
   set nb-to-collect count diamonds
 end
@@ -493,8 +527,8 @@ end
 GRAPHICS-WINDOW
 482
 10
-1392
-941
+727
+221
 -1
 -1
 36.0
@@ -508,8 +542,8 @@ GRAPHICS-WINDOW
 0
 1
 0
-24
--24
+4
+-4
 0
 1
 1
@@ -549,7 +583,7 @@ NIL
 NIL
 NIL
 NIL
-1
+0
 
 MONITOR
 25
@@ -681,7 +715,7 @@ CHOOSER
 level
 level
 "level0" "level1" "level2"
-1
+0
 
 MONITOR
 287
@@ -727,18 +761,7 @@ OUTPUT
 617
 461
 743
-11
-
-MONITOR
-312
-379
-428
-424
-NIL
-directionOfHero
-17
-1
-11
+12
 
 @#$#@#$#@
 ## WHAT IS IT?
