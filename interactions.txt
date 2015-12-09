@@ -69,6 +69,11 @@ parallel interaction Explode
   actions 	     create-blast target:die die 
 end
 
+parallel interaction Transform
+  condition	     moving?
+  actions            create-one-diamond target:die die
+end
+
 parallel interaction Collect
   trigger	     target-ahead?
   condition 	     moving?

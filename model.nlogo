@@ -3,6 +3,7 @@ __includes ["IODA_2_3.nls"]
 extensions [ioda]
 
 breed [walls wall]
+breed [magicwalls magicwall]
 breed [heros hero]
 breed [monsters monster]
 breed [doors door]
@@ -17,6 +18,7 @@ diamonds-own  [ moving? ]
 monsters-own  [ moving? right-handed? ]
 rocks-own     [ moving? ]
 walls-own     [ destructible? ]
+magicwalls-own     [ destructible? ]
 doors-own     [ open? ]
 blast-own     [ strength diamond-maker? ]
 
@@ -70,6 +72,7 @@ to next-level
        reset-ticks
   set levelNumber levelNumber + 1
   set-default-shape walls "tile brick"
+  set-default-shape magicwalls "tile brick"
   set-default-shape heros "person"
   set-default-shape monsters "ghost"
   set-default-shape doors "door-open"
@@ -94,31 +97,35 @@ to create-agent [ char ]
     [ sprout-walls 1 [ init-wall false ] ]
     [ ifelse (char = "x")
         [ sprout-walls 1 [ init-wall true ] ]
-        [ ifelse (char = "O")
-            [ sprout-doors 1 [ init-door ]]
-            [ ifelse (char = "H")
-                [ sprout-heros 1 [ init-hero ]]
-                [ ifelse (char = "D")
-                    [ sprout-diamonds 1 [ init-diamond ]]
-                    [ ifelse (char = "R")
-                        [ sprout-rocks 1 [ init-rock ]]
-                        [ ifelse (char = "M")
+                [ ifelse (char = "W")
+                  [sprout-magicwalls 1 [init-magicwall ] ]
+                  [ ifelse (char = "O")
+                    [ sprout-doors 1 [ init-door ]]
+                    [ ifelse (char = "H")
+                      [ sprout-heros 1 [ init-hero ]]
+                      [ ifelse (char = "D")
+                        [ sprout-diamonds 1 [ init-diamond ]]
+                        [ ifelse (char = "R")
+                          [ sprout-rocks 1 [ init-rock ]]
+                          [ ifelse (char = "M")
                             [ sprout-monsters 1 [ init-monster ]]
                             [ ifelse (char = ".")
-                                [ sprout-dirt 1 [ init-dirt ] ]
-                                [ ;;;;;; other agents ?
-                                ]
+                              [ sprout-dirt 1 [ init-dirt ] ]
+                              [ ;;;;;; other agents ?
+                              ]
                             ]
+                          ]
                         ]
+                      ]
                     ]
-                ]
-            ]
-        ]
+                  ]
+              ]
     ]
 end
 
 to init-world
   set-default-shape walls "tile brick"
+  set-default-shape magicwalls "tile brick"
   set-default-shape heros "person"
   set-default-shape monsters "ghost"
   set-default-shape doors "door-open"
@@ -189,6 +196,13 @@ to init-wall [ d ]
   set destructible? d
   set heading 0
   set color blue - 4
+end
+
+to init-magicwall
+  ioda:init-agent
+  set destructible? true
+  set heading 0
+  set color green + 4
 end
 
 
@@ -379,6 +393,12 @@ to rocks::move-down
   default::move-down
 end
 
+
+to rocks::create-one-diamond
+  ask patch-here [ sprout-diamonds 1 [ init-diamond ] ]
+end
+
+
 to rocks::create-blast
   let dm? ifelse-value ([breed] of ioda:my-target = monsters) [ [right-handed?] of ioda:my-target ] [ true ]
   hatch-blast 1 [ init-blast dm? ]
@@ -455,6 +475,12 @@ to blast::die
 end
 
 
+; magicwall-related primitives
+to magicwalls::die
+  ask ioda:my-target [
+    ioda:die
+  ]
+end
 
 
 ; hero-related primitives
@@ -605,7 +631,7 @@ halo-of-hero
 halo-of-hero
 1
 10
-5
+10
 1
 1
 NIL
@@ -714,8 +740,8 @@ CHOOSER
 108
 level
 level
-"level0" "level1" "level2"
-0
+"level0" "level1" "level2" "level3"
+3
 
 MONITOR
 287
