@@ -202,7 +202,7 @@ to init-magicwall
   ioda:init-agent
   set destructible? true
   set heading 0
-  set color green + 4
+  set color blue
 end
 
 
@@ -553,8 +553,8 @@ end
 GRAPHICS-WINDOW
 482
 10
-727
-221
+1392
+941
 -1
 -1
 36.0
@@ -568,8 +568,8 @@ GRAPHICS-WINDOW
 0
 1
 0
-4
--4
+24
+-24
 0
 1
 1
@@ -741,7 +741,7 @@ CHOOSER
 level
 level
 "level0" "level1" "level2" "level3"
-3
+1
 
 MONITOR
 287
