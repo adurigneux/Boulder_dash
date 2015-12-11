@@ -11,6 +11,7 @@ breed [rocks rock]
 breed [diamonds diamond]
 breed [dirt]
 breed [blast]
+breed [explosives explosive]
 
 globals       [ score nb-to-collect countdown directionOfHero headingRocksValueTemp levelNumber]
 heros-own     [ moving? orders ]
@@ -21,6 +22,7 @@ walls-own     [ destructible? ]
 magicwalls-own     [ destructible? ]
 doors-own     [ open? ]
 blast-own     [ strength diamond-maker? ]
+explosives-own     [ time-to-explose ]
 
 
 
@@ -80,6 +82,7 @@ to next-level
   set-default-shape diamonds "diamond"
   set-default-shape dirt "dirt"
   set-default-shape blast "star"
+  set-default-shape explosives "flower"
   read-level (word "level" levelNumber ".txt")
   set countdown 0
   set nb-to-collect count diamonds
@@ -133,6 +136,7 @@ to init-world
   set-default-shape diamonds "diamond"
   set-default-shape dirt "dirt"
   set-default-shape blast "star"
+  set-default-shape explosives "flower"
   read-level (word level ".txt")
   set levelNumber read-from-string substring level 5 6
   set countdown 0
@@ -145,6 +149,15 @@ to init-hero
   set color red
   set moving? false
   set orders []
+end
+
+to init-explosive
+  ioda:init-agent
+  set heading 0
+  set time-to-explose limite-time-explosive ;;; depuis interface
+  set color red
+  set shape "flower"
+
 end
 
 to init-door
@@ -177,6 +190,7 @@ to init-diamond
   set color cyan
   set heading 180
   set moving? false
+  set nb-to-collect nb-to-collect + 1
 end
 
 to init-blast [ dm? ]
@@ -460,8 +474,10 @@ end
 
 to blast::kill
   ask turtles-on neighbors
-    [ output-show breed
-      if (breed = walls and destructible? or breed != doors)
+    [ ;output-show breed
+      ;if (breed = walls) [output-show destructible?]
+
+      if (breed = walls and destructible? = true or breed != doors)
       [ ioda:die ]
     ]
 end
@@ -481,6 +497,30 @@ to magicwalls::die
     ioda:die
   ]
 end
+
+
+;;;;;;explosives
+
+to-report explosives::explose?
+  report time-to-explose <= 0
+end
+
+to explosives::update-timer
+   set time-to-explose time-to-explose - 1
+end
+
+to explosives::die
+  ioda:die
+  ; diams 1/3
+  let valRand random 3
+  let createDiams? true
+  ifelse (valRand = 1)
+  [set createDiams? true]
+  [set createDiams? false]
+  hatch-blast 1 [ init-blast createDiams? ]
+end
+
+
 
 
 ; hero-related primitives
@@ -518,15 +558,24 @@ to-report heros::message-received?
   report not empty? orders
 end
 
+to heros::drop-explosive
+  ask patch-here [ sprout-explosives 1 [init-explosive] ]
+end
+
 to heros::handle-messages
   foreach orders
     [ let m ?
       ifelse (m = "STOP")
         [ set moving? false]
-        [ set heading m set moving? true set directionOfHero m]
+        [ ifelse (m = "EXPLOSIVE")
+          [ heros::drop-explosive ]
+          [set heading m set moving? true set directionOfHero m]
+        ]
+
     ]
   set orders []
 end
+
 
 to heros::stop-moving
   set moving? false
@@ -553,8 +602,8 @@ end
 GRAPHICS-WINDOW
 482
 10
-1392
-941
+852
+401
 -1
 -1
 36.0
@@ -568,8 +617,8 @@ GRAPHICS-WINDOW
 0
 1
 0
-24
--24
+9
+-9
 0
 1
 1
@@ -740,8 +789,8 @@ CHOOSER
 108
 level
 level
-"level0" "level1" "level2" "level3"
-1
+"level0" "level1" "level2" "level3" "level4"
+4
 
 MONITOR
 287
@@ -787,7 +836,35 @@ OUTPUT
 617
 461
 743
-12
+11
+
+INPUTBOX
+25
+84
+180
+144
+limite-time-explosive
+45
+1
+0
+Number
+
+BUTTON
+30
+389
+147
+422
+Drop explosive
+ask heros [ send-message \"EXPLOSIVE\" ]
+NIL
+1
+T
+OBSERVER
+NIL
+B
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?

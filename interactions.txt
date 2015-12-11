@@ -110,4 +110,17 @@ parallel interaction RollDownLeft
 end
 
 
+;;maj du timer des bombes
+parallel interaction UpdateTimerExplosive
+  actions	update-timer
+end
+
+
+;;explosions
+parallel interaction BoomExplosive
+  condition	explose?
+  actions	die
+end
+
+
 
