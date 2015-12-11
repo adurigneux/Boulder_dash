@@ -16,7 +16,7 @@ breed [flags flag]
 breed [cibles cible]
 
 globals       [ score nb-to-collect countdown directionOfHero headingRocksValueTemp levelNumber hasFlag hasTarget isTargetOpen?]
-heros-own     [ moving? orders bag]
+heros-own     [ moving? orders]
 diamonds-own  [ moving? ]
 monsters-own  [ moving? right-handed? ]
 rocks-own     [ moving? ]
@@ -43,7 +43,7 @@ to go
   ifelse (not any? heros)
     [ ifelse (countdown = 0) [ user-message "GAME OVER !" stop ] [ set countdown countdown - 1 ]]
     [ if (all? heros [any? doors-here with [open?]])
-        [ user-message "CONGRATULATIONS !" next-level ]
+        [ user-message "CONGRATULATIONS !" next-level  ]
     ]
 
 end
@@ -66,14 +66,15 @@ end
 
 to next-level
 
+
  clear-ticks
   clear-turtles
    clear-patches
     clear-drawing
      clear-all-plots
-      clear-output
+      ;clear-output
        reset-ticks
-  set levelNumber levelNumber + 1
+ set levelNumber levelNumber + 1
   set-default-shape walls "tile brick"
   set-default-shape magicwalls "tile brick"
   set-default-shape heros "person"
@@ -97,7 +98,17 @@ to next-level
 end
 
 
+to reset-level
+  user-message "Niveau impossible ! recommencez "
+   set levelNumber levelNumber - 1
+  next-level
+end
+
 to create-agent [ char ]
+  set hasFlag false
+  set hasTarget false
+  set isTargetOpen? false
+
   ifelse (char = "X")
     [ sprout-walls 1 [ init-wall false ] ]
     [ ifelse (char = "x")
@@ -494,7 +505,7 @@ end
 
 to blast::create-diamonds
   ask neighbors [ sprout-diamonds 1 [ init-diamond ] ]
-  ;ask patch-here [ sprout-diamonds 1 [ init-diamond ] ]
+  ask patch-here [ sprout-diamonds 1 [ init-diamond ] ]
 end
 
 to blast::kill
@@ -657,13 +668,12 @@ to cibles::check-flag
       cibles::update-shape ]
 end
 
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 482
 10
-1392
-941
+727
+221
 -1
 -1
 36.0
@@ -677,8 +687,8 @@ GRAPHICS-WINDOW
 0
 1
 0
-24
--24
+4
+-4
 0
 1
 1
@@ -850,7 +860,7 @@ CHOOSER
 level
 level
 "level0" "level1" "level2" "level3" "level4" "level5"
-1
+0
 
 MONITOR
 287
@@ -922,6 +932,40 @@ T
 OBSERVER
 NIL
 B
+NIL
+NIL
+1
+
+BUTTON
+31
+179
+116
+212
+Abandon
+reset-level
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+30
+225
+116
+258
+next level
+next-level
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
 NIL
 NIL
 1
