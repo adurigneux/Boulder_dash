@@ -9,11 +9,11 @@ X..D.D....X...D....D....X
 X.D.D.D...X...D    D....X
 X.........X...D   MD....X
 X.........X...DM   D....X
-XXXXXXXXXXX..xxxWWxxx...X
+XXXXXXXXXXX..xxxxxxxx...X
 X............x......x...X
 X............x......x...X
 X............xDDDDDDx...X
-X............xXXWWXXX...X
+X............xXXXXXXX...X
 X.......................X
 X.RRR..R...R...R....RRR.X
 XR...R.RR.RR..R.R..R...RX

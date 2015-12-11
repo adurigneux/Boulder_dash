@@ -12,9 +12,11 @@ breed [diamonds diamond]
 breed [dirt]
 breed [blast]
 breed [explosives explosive]
+breed [flags flag]
+breed [cibles cible]
 
-globals       [ score nb-to-collect countdown directionOfHero headingRocksValueTemp levelNumber]
-heros-own     [ moving? orders ]
+globals       [ score nb-to-collect countdown directionOfHero headingRocksValueTemp levelNumber hasFlag hasTarget isTargetOpen?]
+heros-own     [ moving? orders bag]
 diamonds-own  [ moving? ]
 monsters-own  [ moving? right-handed? ]
 rocks-own     [ moving? ]
@@ -23,7 +25,6 @@ magicwalls-own     [ destructible? ]
 doors-own     [ open? ]
 blast-own     [ strength diamond-maker? ]
 explosives-own     [ time-to-explose ]
-
 
 
 to setup
@@ -83,10 +84,11 @@ to next-level
   set-default-shape dirt "dirt"
   set-default-shape blast "star"
   set-default-shape explosives "flower"
+  set-default-shape flags "flag"
+  set-default-shape cibles "target"
   read-level (word "level" levelNumber ".txt")
   set countdown 0
   set nb-to-collect count diamonds
-
 
   ioda:setup
   ioda:set-metric "Moore"
@@ -100,29 +102,36 @@ to create-agent [ char ]
     [ sprout-walls 1 [ init-wall false ] ]
     [ ifelse (char = "x")
         [ sprout-walls 1 [ init-wall true ] ]
-                [ ifelse (char = "W")
-                  [sprout-magicwalls 1 [init-magicwall ] ]
-                  [ ifelse (char = "O")
-                    [ sprout-doors 1 [ init-door ]]
-                    [ ifelse (char = "H")
-                      [ sprout-heros 1 [ init-hero ]]
-                      [ ifelse (char = "D")
-                        [ sprout-diamonds 1 [ init-diamond ]]
-                        [ ifelse (char = "R")
-                          [ sprout-rocks 1 [ init-rock ]]
-                          [ ifelse (char = "M")
-                            [ sprout-monsters 1 [ init-monster ]]
-                            [ ifelse (char = ".")
-                              [ sprout-dirt 1 [ init-dirt ] ]
-                              [ ;;;;;; other agents ?
-                              ]
+          [ ifelse (char = "W")
+            [sprout-magicwalls 1 [init-magicwall ] ]
+            [ ifelse (char = "O")
+              [ sprout-doors 1 [ init-door ]]
+              [ ifelse (char = "H")
+                [ sprout-heros 1 [ init-hero ]]
+                [ ifelse (char = "D")
+                  [ sprout-diamonds 1 [ init-diamond ]]
+                  [ ifelse (char = "R")
+                    [ sprout-rocks 1 [ init-rock ]]
+                    [ ifelse (char = "M")
+                      [ sprout-monsters 1 [ init-monster ]]
+                      [ ifelse (char = ".")
+                        [ sprout-dirt 1 [ init-dirt ] ]
+                        [ ifelse (char = "T")
+                          [ sprout-cibles 1 [ init-cible]]
+                          [ ifelse (char = "F")
+                            [ sprout-flags 1 [ init-flag] set hasFlag false]
+                            [ ;;;;;; other agents ?
                             ]
                           ]
                         ]
+
                       ]
                     ]
                   ]
+                ]
               ]
+            ]
+        ]
     ]
 end
 
@@ -137,10 +146,25 @@ to init-world
   set-default-shape dirt "dirt"
   set-default-shape blast "star"
   set-default-shape explosives "flower"
+    set-default-shape flags "flag"
+  set-default-shape cibles "target"
   read-level (word level ".txt")
   set levelNumber read-from-string substring level 5 6
   set countdown 0
   set nb-to-collect count diamonds
+
+end
+
+to init-flag
+  set heading 0
+  set color yellow - 1
+end
+
+to init-cible
+  set color yellow - 1
+  set heading 0
+  set hasTarget true
+  set isTargetOpen? false
 end
 
 to init-hero
@@ -266,7 +290,7 @@ to-report doors::closed?
 end
 
 to-report doors::objectives-fulfilled?
-  report nb-to-collect = 0
+  report nb-to-collect = 0 and ((hasTarget = true and isTargetOpen? = true ) or (hasTarget = false))
 end
 
 to doors::change-state
@@ -312,6 +336,7 @@ to diamonds::create-blast
 end
 
 to diamonds::die
+  set nb-to-collect nb-to-collect - 1
   ioda:die
 end
 
@@ -469,7 +494,7 @@ end
 
 to blast::create-diamonds
   ask neighbors [ sprout-diamonds 1 [ init-diamond ] ]
-  ask patch-here [ sprout-diamonds 1 [ init-diamond ] ]
+  ;ask patch-here [ sprout-diamonds 1 [ init-diamond ] ]
 end
 
 to blast::kill
@@ -477,7 +502,9 @@ to blast::kill
     [ ;output-show breed
       ;if (breed = walls) [output-show destructible?]
 
-      if (breed = walls and destructible? = true or breed != doors)
+      ifelse ((breed = walls and destructible? = false) or breed = doors or breed = cibles or breed = flags)
+      [ ;;je fais rien
+        ]
       [ ioda:die ]
     ]
 end
@@ -510,14 +537,17 @@ to explosives::update-timer
 end
 
 to explosives::die
-  ioda:die
+
   ; diams 1/3
   let valRand random 3
-  let createDiams? true
-  ifelse (valRand = 1)
-  [set createDiams? true]
-  [set createDiams? false]
+  let createDiams? false
+
+  ;ifelse (valRand = 1)
+  ;  [set createDiams? true]
+  ;  [set createDiams? false]
+
   hatch-blast 1 [ init-blast createDiams? ]
+  ioda:die
 end
 
 
@@ -596,14 +626,44 @@ end
 
 to heros::increase-score
   set score score + 1
-  set nb-to-collect nb-to-collect - 1
 end
+
+to-report heros::own-flag?
+  report hasFlag
+end
+
+to heros::receive-Flag
+  set hasFlag true
+end
+;;;;;key
+
+to flags::die
+  ioda:die
+end
+
+
+to cibles::update-shape
+    set shape "circle"
+end
+
+
+to-report cibles::die
+   ioda:die
+end
+
+to cibles::check-flag
+  if(hasFlag = true)
+    [ set isTargetOpen? true
+      cibles::update-shape ]
+end
+
+
 @#$#@#$#@
 GRAPHICS-WINDOW
 482
 10
-852
-401
+1392
+941
 -1
 -1
 36.0
@@ -617,8 +677,8 @@ GRAPHICS-WINDOW
 0
 1
 0
-9
--9
+24
+-24
 0
 1
 1
@@ -789,8 +849,8 @@ CHOOSER
 108
 level
 level
-"level0" "level1" "level2" "level3" "level4"
-4
+"level0" "level1" "level2" "level3" "level4" "level5"
+1
 
 MONITOR
 287
@@ -1299,6 +1359,11 @@ false
 0
 Rectangle -7500403 true true 30 30 270 270
 Rectangle -16777216 true false 60 60 240 240
+
+sss
+true
+0
+Rectangle -7500403 true true 60 45 225 225
 
 star
 false

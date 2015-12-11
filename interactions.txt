@@ -123,4 +123,18 @@ parallel interaction BoomExplosive
 end
 
 
+;;flag
+parallel interaction CollectFlag
+  trigger	     target-ahead?
+  condition	     moving? 
+  actions	     target:die move-forward receive-Flag
+end
+
+;;target
+parallel interaction OpenTarget
+  trigger	     target-ahead?
+  condition	     moving? 
+  actions	     move-forward target:check-flag
+end
+
 
