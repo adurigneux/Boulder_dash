@@ -137,4 +137,14 @@ parallel interaction OpenTarget
   actions	     move-forward target:check-flag
 end
 
+parallel interaction Ia
+  trigger	     isIAset?  path-to-target?
+  actions	    choose-shortest-path  start-moving
+end
+
+parallel interaction BlockedIa
+  trigger	     isIAset?  not:path-to-target?
+  actions	    end-game
+end
+
 

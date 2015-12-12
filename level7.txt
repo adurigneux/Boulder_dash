@@ -1,0 +1,11 @@
+[10 10]
+XXXXXXXXXX
+XH       X
+X. .D..D.X
+X. .D..D.X
+XF .D..D.X
+X. .D..D.X
+X. .D..D.X
+X. .DT.D.X
+X.R.X..XDO
+XXXXXXXXXX

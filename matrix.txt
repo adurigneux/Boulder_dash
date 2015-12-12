@@ -66,6 +66,8 @@ heros		Explode		 100    monsters	 0
 heros		MoveRock	 70     rocks		 1 
 heros		CollectFlag		 20 	flags		 1 
 heros		OpenTarget		 20 	cibles		 1 
+heros		Ia		100		UPDATE
+heros		BlockedIa		100		UPDATE
 
 explosives		UpdateTimerExplosive		100		UPDATE
 explosives		BoomExplosive		90		UPDATE

@@ -15,9 +15,13 @@ breed [explosives explosive]
 breed [flags flag]
 breed [cibles cible]
 
-globals       [ score nb-to-collect countdown directionOfHero headingRocksValueTemp levelNumber hasFlag hasTarget isTargetOpen?]
-heros-own     [ moving? orders]
-diamonds-own  [ moving? ]
+patches-own [ dijkstra-dist ]
+
+
+
+globals       [ score nb-to-collect countdown directionOfHero headingRocksValueTemp levelNumber hasFlag hasTarget isTargetOpen? blockedIAgame waitingTimeBeforeEnd]
+heros-own     [ moving? orders goals]
+diamonds-own  [ moving?]
 monsters-own  [ moving? right-handed? ]
 rocks-own     [ moving? ]
 walls-own     [ destructible? ]
@@ -40,15 +44,24 @@ end
 to go
   ioda:go
   tick
+
+  if (blockedIAgame = true)
+  [ set waitingTimeBeforeEnd waitingTimeBeforeEnd - 1
+    if(waitingTimeBeforeEnd <= 0)
+      [user-message "Niveau impossible !" ]
+  ]
+  if(heros::isIAset?) [ set step-by-step? false ]
   ifelse (not any? heros)
     [ ifelse (countdown = 0) [ user-message "GAME OVER !" stop ] [ set countdown countdown - 1 ]]
     [ if (all? heros [any? doors-here with [open?]])
-        [ user-message "CONGRATULATIONS !" next-level  ]
+        [ user-message "CONGRATULATIONS !" next-level stop ]
     ]
 
 end
 
 to read-level [ filename ]
+  if(not file-exists? filename)
+  [user-message (word "Fichier " filename  " inexistant !")  stop ]
   file-open filename
   let s read-from-string file-read-line ; list with width and height
   resize-world 0 (first s - 1)  (1 - last s) 0
@@ -65,8 +78,6 @@ end
 
 
 to next-level
-
-
  clear-ticks
   clear-turtles
    clear-patches
@@ -90,7 +101,7 @@ to next-level
   read-level (word "level" levelNumber ".txt")
   set countdown 0
   set nb-to-collect count diamonds
-
+  ask patches [set dijkstra-dist -1]
   ioda:setup
   ioda:set-metric "Moore"
 
@@ -98,8 +109,9 @@ to next-level
 end
 
 
+
 to reset-level
-  user-message "Niveau impossible ! recommencez "
+  user-message "Abandon ? recommencez ,;)"
    set levelNumber levelNumber - 1
   next-level
 end
@@ -107,7 +119,9 @@ end
 to create-agent [ char ]
   set hasFlag false
   set hasTarget false
-  set isTargetOpen? false
+  set blockedIAgame false
+  set waitingTimeBeforeEnd 50
+
 
   ifelse (char = "X")
     [ sprout-walls 1 [ init-wall false ] ]
@@ -128,7 +142,7 @@ to create-agent [ char ]
                       [ ifelse (char = ".")
                         [ sprout-dirt 1 [ init-dirt ] ]
                         [ ifelse (char = "T")
-                          [ sprout-cibles 1 [ init-cible]]
+                          [ sprout-cibles 1 [ init-cible] set hasTarget true]
                           [ ifelse (char = "F")
                             [ sprout-flags 1 [ init-flag] set hasFlag false]
                             [ ;;;;;; other agents ?
@@ -163,6 +177,7 @@ to init-world
   set levelNumber read-from-string substring level 5 6
   set countdown 0
   set nb-to-collect count diamonds
+    ask patches [set dijkstra-dist -1]
 
 end
 
@@ -174,7 +189,6 @@ end
 to init-cible
   set color yellow - 1
   set heading 0
-  set hasTarget true
   set isTargetOpen? false
 end
 
@@ -184,6 +198,7 @@ to init-hero
   set color red
   set moving? false
   set orders []
+  set goals []
 end
 
 to init-explosive
@@ -351,6 +366,11 @@ to diamonds::die
   ioda:die
 end
 
+to diamonds::become-goal
+  ask ioda:my-target
+    [ set goals fput (list diamonds) goals
+      ]
+ end
 
 
 ; rocks-related primitives
@@ -622,6 +642,11 @@ to heros::stop-moving
   set moving? false
 end
 
+to heros::start-moving
+  set moving? true
+
+end
+
 to heros::die
   set countdown 10
   ioda:die
@@ -668,12 +693,86 @@ to cibles::check-flag
       cibles::update-shape ]
 end
 
+
+to-report heros::isIAset?
+  report setIA?
+end
+;;;;;;ia method
+to heros::interact-with-neighbor
+ ; Select a random neighbor and interact with it
+  heros::filter-neighbors
+  let near one-of turtles with [breed = diamonds]
+  if near != nobody [
+    face near
+    if [breed] of near = diamonds [ ;heros::move-forward
+      ]
+  ]
+end
+
+to heros::end-game
+  set blockedIAgame true
+end
+
+
+to heros::choose-shortest-path
+  let d [dijkstra-dist] of patch-here
+  let n one-of (neighbors4 with [ is-path? d ]) with-min [dijkstra-dist]
+  ;output-show n
+  if(n != nobody) [face n]
+end
+
+to-report is-path? [ threshold ]
+  report (dijkstra-dist >= 0) and (dijkstra-dist < threshold) and (not any? walls-here)
+end
+
+
+; dijkstra algorithm -> shortest path to specified agents (turtle procedure)
+; the immediate? flag indicates if the path is computed from only accessible
+; patches or with possible ways through doors in unknown state
+to propagate-dist [ ag-or-pset ]
+  ask patches with [ not any? walls-here ]
+    [ set dijkstra-dist -1 set plabel "" ]
+  let p ifelse-value (is-agentset? ag-or-pset) [ ag-or-pset ] [(patch-set [patch-here] of (ag-or-pset with [ ioda:alive? ]))]
+  ask p
+    [ set dijkstra-dist 0
+      if show-dijkstra? [ set plabel 0 ]
+    ]
+  let s 0
+  while [ any? p ]
+    [ set s s + 1
+      let pp patch-set ([neighbors4 with [ (not obstacle-here?) and ((dijkstra-dist < 0) or (dijkstra-dist > s)) ]] of p)
+      ask pp
+        [ set dijkstra-dist s
+          if show-dijkstra?
+          [ set plabel dijkstra-dist ]
+        ]
+      set p pp ]
+end
+
+to-report obstacle-here?
+  report any? walls-here or any? rocks-here
+end
+
+
+
+to-report heros::path-to? [agentset]
+  propagate-dist agentset
+  let d [dijkstra-dist] of patch-here
+  report any? neighbors4 with [ is-path? d ]
+end
+
+
+to-report heros::path-to-target?
+  let goal ifelse-value (any? doors with [doors::open?]) [(turtle-set doors)] [(turtle-set diamonds)]
+  ;output-show (turtle-set goal)
+  report heros::path-to? (turtle-set goal)
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 482
 10
-727
-221
+852
+401
 -1
 -1
 36.0
@@ -687,8 +786,8 @@ GRAPHICS-WINDOW
 0
 1
 0
-4
--4
+9
+-9
 0
 1
 1
@@ -750,7 +849,7 @@ halo-of-hero
 halo-of-hero
 1
 10
-10
+9
 1
 1
 NIL
@@ -859,8 +958,8 @@ CHOOSER
 108
 level
 level
-"level0" "level1" "level2" "level3" "level4" "level5"
-0
+"level0" "level1" "level2" "level3" "level4" "level5" "level6" "level7"
+7
 
 MONITOR
 287
@@ -880,7 +979,7 @@ SWITCH
 155
 step-by-step?
 step-by-step?
-0
+1
 1
 -1000
 
@@ -969,6 +1068,28 @@ NIL
 NIL
 NIL
 1
+
+SWITCH
+272
+202
+375
+235
+setIA?
+setIA?
+0
+1
+-1000
+
+SWITCH
+272
+240
+407
+273
+show-dijkstra?
+show-dijkstra?
+1
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?
