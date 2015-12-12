@@ -50,7 +50,7 @@ to go
     if(waitingTimeBeforeEnd <= 0)
       [user-message "Niveau impossible !" ]
   ]
-  if(heros::isIAset?) [ set step-by-step? false ]
+  ifelse(heros::isIAset?) [ set step-by-step? false ] [ set step-by-step? true ]
   ifelse (not any? heros)
     [ ifelse (countdown = 0) [ user-message "GAME OVER !" stop ] [ set countdown countdown - 1 ]]
     [ if (all? heros [any? doors-here with [open?]])
@@ -1091,7 +1091,7 @@ SWITCH
 273
 show-dijkstra?
 show-dijkstra?
-1
+0
 1
 -1000
 
