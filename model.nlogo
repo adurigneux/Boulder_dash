@@ -86,18 +86,8 @@ to next-level
       ;clear-output
        reset-ticks
  set levelNumber levelNumber + 1
-  set-default-shape walls "tile brick"
-  set-default-shape magicwalls "tile brick"
-  set-default-shape heros "person"
-  set-default-shape monsters "ghost"
-  set-default-shape doors "door-open"
-  set-default-shape rocks "rock"
-  set-default-shape diamonds "diamond"
-  set-default-shape dirt "dirt"
-  set-default-shape blast "star"
-  set-default-shape explosives "flower"
-  set-default-shape flags "flag"
-  set-default-shape cibles "target"
+ init-global
+
   read-level (word "level" levelNumber ".txt")
   set countdown 0
   set nb-to-collect count diamonds
@@ -117,12 +107,6 @@ to reset-level
 end
 
 to create-agent [ char ]
-  set hasFlag false
-  set hasTarget false
-  set blockedIAgame false
-  set waitingTimeBeforeEnd 50
-
-
   ifelse (char = "X")
     [ sprout-walls 1 [ init-wall false ] ]
     [ ifelse (char = "x")
@@ -161,7 +145,24 @@ to create-agent [ char ]
 end
 
 to init-world
-  set-default-shape walls "tile brick"
+  init-global
+  read-level (word level ".txt")
+  set levelNumber read-from-string substring level 5 6
+  set countdown 0
+  set nb-to-collect count diamonds
+    ask patches [set dijkstra-dist -1]
+
+end
+
+
+to init-global
+  set hasFlag false
+  set hasTarget false
+  set blockedIAgame false
+  set waitingTimeBeforeEnd 50
+  set isTargetOpen? false
+
+   set-default-shape walls "tile brick"
   set-default-shape magicwalls "tile brick"
   set-default-shape heros "person"
   set-default-shape monsters "ghost"
@@ -171,16 +172,9 @@ to init-world
   set-default-shape dirt "dirt"
   set-default-shape blast "star"
   set-default-shape explosives "flower"
-    set-default-shape flags "flag"
+  set-default-shape flags "flag"
   set-default-shape cibles "target"
-  read-level (word level ".txt")
-  set levelNumber read-from-string substring level 5 6
-  set countdown 0
-  set nb-to-collect count diamonds
-    ask patches [set dijkstra-dist -1]
-
 end
-
 to init-flag
   set heading 0
   set color yellow - 1
@@ -763,7 +757,17 @@ end
 
 
 to-report heros::path-to-target?
-  let goal ifelse-value (any? doors with [doors::open?]) [(turtle-set doors)] [(turtle-set diamonds)]
+  let goal ifelse-value (any? doors with [doors::open?])
+      [(turtle-set doors)]
+      [(turtle-set diamonds)]
+
+  if(not any? goal)
+   [  set goal ifelse-value (any? flags)
+      [(turtle-set flags)]
+      [(turtle-set cibles)]
+   ]
+   if(isTargetOpen? = true)
+   [set goal (turtle-set doors)]
   ;output-show (turtle-set goal)
   report heros::path-to? (turtle-set goal)
 end
@@ -771,8 +775,8 @@ end
 GRAPHICS-WINDOW
 482
 10
-852
-401
+1032
+581
 -1
 -1
 36.0
@@ -786,8 +790,8 @@ GRAPHICS-WINDOW
 0
 1
 0
-9
--9
+14
+-14
 0
 1
 1
