@@ -78,15 +78,15 @@ end
 
 
 to next-level
- clear-ticks
+  clear-ticks
   clear-turtles
-   clear-patches
-    clear-drawing
-     clear-all-plots
-      ;clear-output
-       reset-ticks
- set levelNumber levelNumber + 1
- init-global
+  clear-patches
+  clear-drawing
+  clear-all-plots
+  ;clear-output
+  reset-ticks
+  set levelNumber levelNumber + 1
+  init-global
 
   read-level (word "level" levelNumber ".txt")
   set countdown 0
@@ -95,14 +95,13 @@ to next-level
   ioda:setup
   ioda:set-metric "Moore"
 
-
 end
 
 
 
 to reset-level
   user-message "Abandon ? recommencez ,;)"
-   set levelNumber levelNumber - 1
+  set levelNumber levelNumber - 1
   next-level
 end
 
@@ -150,8 +149,7 @@ to init-world
   set levelNumber read-from-string substring level 5 6
   set countdown 0
   set nb-to-collect count diamonds
-    ask patches [set dijkstra-dist -1]
-
+  ask patches [set dijkstra-dist -1]
 end
 
 
@@ -162,7 +160,7 @@ to init-global
   set waitingTimeBeforeEnd 50
   set isTargetOpen? false
 
-   set-default-shape walls "tile brick"
+  set-default-shape walls "tile brick"
   set-default-shape magicwalls "tile brick"
   set-default-shape heros "person"
   set-default-shape monsters "ghost"
@@ -763,13 +761,13 @@ to heros::repulsors
   let fin 5
   let force 40
 
-      ; Chute de diamants
-    let fallingDiamonds diamonds with [not any? turtles-on patch-at 0 -1 or moving? = true]
-    heros::increase-dijkstra-dist fallingDiamonds force
+  ; Chute de diamants
+  let fallingDiamonds diamonds with [not any? turtles-on patch-at 0 -1 or moving? = true]
+  heros::increase-dijkstra-dist fallingDiamonds force
 
-        ; Chutes de pierres
-    let fallingRocks rocks with [not any? turtles-on patch-at 0 -1 or moving? = true]
-    heros::increase-dijkstra-dist fallingRocks force
+  ; Chutes de pierres
+  let fallingRocks rocks with [not any? turtles-on patch-at 0 -1 or moving? = true]
+  heros::increase-dijkstra-dist fallingRocks force
 
 
   while [debut <= fin]
