@@ -139,7 +139,7 @@ end
 
 parallel interaction Ia
   trigger	     isIAset?  path-to-target?
-  actions	    choose-shortest-path  start-moving
+  actions	    choose-shortest-path  start-moving continue-game
 end
 
 parallel interaction BlockedIa

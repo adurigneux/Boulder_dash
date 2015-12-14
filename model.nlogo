@@ -707,6 +707,10 @@ to heros::end-game
   set blockedIAgame true
 end
 
+to heros::continue-game
+  set blockedIAgame false
+end
+
 
 to heros::choose-shortest-path
   let d [dijkstra-dist] of patch-here
@@ -741,13 +745,76 @@ to propagate-dist [ ag-or-pset ]
           [ set plabel dijkstra-dist ]
         ]
       set p pp ]
+
+    heros::repulsors
 end
 
 to-report obstacle-here?
   report any? walls-here or any? rocks-here
 end
 
+to heros::repulsors
 
+  ; on ajoute une distance de 1 autour de tous les monstres sur un voisinages de 4
+  let around-monsters [neighbors4] of monsters
+  heros::increase-dijkstra-dist around-monsters 5
+
+  let debut 0
+  let fin 5
+  let force 40
+
+      ; Chute de diamants
+    let fallingDiamonds diamonds with [not any? turtles-on patch-at 0 -1 or moving? = true]
+    heros::increase-dijkstra-dist fallingDiamonds force
+
+        ; Chutes de pierres
+    let fallingRocks rocks with [not any? turtles-on patch-at 0 -1 or moving? = true]
+    heros::increase-dijkstra-dist fallingRocks force
+
+
+  while [debut <= fin]
+  [
+    let in-front-of-monsters [(patch-set patch-ahead debut)] of monsters
+    heros::increase-dijkstra-dist in-front-of-monsters (fin - debut) * force
+
+
+    let under-falling-rocks (patch-set )
+    ask fallingRocks [set under-falling-rocks (patch-set under-falling-rocks heros::patch-under self )]
+    heros::increase-dijkstra-dist under-falling-rocks (fin - debut) * force
+
+
+    let under-falling-diamonds (patch-set )
+    ask fallingDiamonds [set under-falling-diamonds (patch-set under-falling-diamonds heros::patch-under self)]
+    heros::increase-dijkstra-dist under-falling-diamonds (fin - debut) * force
+
+
+    set debut debut + 1
+  ]
+
+end
+
+to heros::increase-dijkstra-dist [dangerous-patches value]
+    ifelse (is-agentset? dangerous-patches)
+    [    ask dangerous-patches with [dijkstra-dist >= 0] [set dijkstra-dist (dijkstra-dist + value) set plabel dijkstra-dist]]
+    [
+      foreach dangerous-patches
+      [ask ? with [dijkstra-dist >= 0] [set dijkstra-dist (dijkstra-dist + value) set plabel dijkstra-dist]]
+    ]
+end
+
+
+to-report heros::patch-under [agent]
+  let dist 1
+  let selectedPatch ( patch-set )
+  loop
+  [
+    let pUnder [(patch-set patch-at 0 ( - dist))] of agent
+    set selectedPatch (patch-set selectedPatch pUnder)
+    if( not any? turtles-on pUnder ) [ report selectedPatch ]
+    set dist dist + 1
+  ]
+
+end
 
 to-report heros::path-to? [agentset]
   propagate-dist agentset
@@ -962,8 +1029,8 @@ CHOOSER
 108
 level
 level
-"level0" "level1" "level2" "level3" "level4" "level5" "level6" "level7"
-7
+"level0" "level1" "level2" "level3" "level4" "level5" "level6" "level7" "level8" "level9"
+8
 
 MONITOR
 287

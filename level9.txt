@@ -1,0 +1,16 @@
+[15 15]
+XXXXXXXXXXXXXXX
+X   M M  M M MO
+X       D   D X
+X             X
+X         ....X
+X             X
+X         R   X
+X       R     X
+X  R          X
+X    R        X
+XR            X
+X             X
+X . . .. . .  X
+XH            X
+XXXXXXXXXXXXXXX
