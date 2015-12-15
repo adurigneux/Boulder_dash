@@ -78,7 +78,7 @@ end
 
 
 to next-level
-  clear-ticks
+
   clear-turtles
   clear-patches
   clear-drawing
@@ -87,8 +87,10 @@ to next-level
   reset-ticks
   set levelNumber levelNumber + 1
   init-global
-
   read-level (word "level" levelNumber ".txt")
+  if ( file-exists? (word "level" levelNumber ".txt"))
+  [set level (word "level" levelNumber)]
+
   set countdown 0
   set nb-to-collect count diamonds
   ask patches [set dijkstra-dist -1]
@@ -1028,7 +1030,7 @@ CHOOSER
 level
 level
 "level0" "level1" "level2" "level3" "level4" "level5" "level6" "level7" "level8" "level9"
-8
+7
 
 MONITOR
 287
@@ -1145,7 +1147,7 @@ SWITCH
 235
 setIA?
 setIA?
-0
+1
 1
 -1000
 
