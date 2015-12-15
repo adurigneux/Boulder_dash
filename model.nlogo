@@ -1237,7 +1237,7 @@ IODA NetLogo extension is distributed in the hope that it will be useful, but WI
 
 You should have received a copy of the GNU General Public License along with the IODA NetLogo extension. If not, see http://www.gnu.org/licenses.
 @#$#@#$#@
-@#$#@#$#@
+
 default
 true
 0
