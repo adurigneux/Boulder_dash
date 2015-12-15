@@ -78,7 +78,7 @@ end
 
 
 to next-level
-
+  clear-ticks
   clear-turtles
   clear-patches
   clear-drawing
@@ -842,8 +842,8 @@ end
 GRAPHICS-WINDOW
 482
 10
-1032
-581
+727
+221
 -1
 -1
 36.0
@@ -857,8 +857,8 @@ GRAPHICS-WINDOW
 0
 1
 0
-14
--14
+4
+-4
 0
 1
 1
@@ -1030,7 +1030,7 @@ CHOOSER
 level
 level
 "level0" "level1" "level2" "level3" "level4" "level5" "level6" "level7" "level8" "level9"
-7
+0
 
 MONITOR
 287
@@ -1147,7 +1147,7 @@ SWITCH
 235
 setIA?
 setIA?
-1
+0
 1
 -1000
 
