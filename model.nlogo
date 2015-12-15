@@ -1163,21 +1163,55 @@ show-dijkstra?
 -1000
 
 @#$#@#$#@
-## WHAT IS IT?
+## PROJET
+Ce fichier est une implémentation basique du jeu "Boulder Dash", un jeu-vidéo datant de 1984, en utilisant l'extension IODA pour Netlogo.
+## QUEL EST LE BUT?
+Le principe du jeu consiste à ramasser un nombre défini de diamants pour ouvrir un passage vers le niveau suivant. Le personnage, surnommé Rockford, doit creuser la terre pour se frayer un chemin. Il devra faire attention à ne pas se faire écraser par un rocher ou un diamant mais également ne pas se faire toucher par les ennemis.
+Certains niveaux n'ont pas de diamants. Le joueur doit alors les générer lui-même en faisant tomber un rocher/diamant sur un ennemi. Il devra préparer le terrain pour y arriver. Lorsqu'on élimine un ennemi de cette façon, celui-ci explose et fait apparaitre des diamants qui à leur tour, tomberont peut-être sur d'autres ennemis créant ainsi une réaction en chaîne. Le joueur peut également utiliser cette technique pour casser les murs et franchir des zones bloquées.
+## RÈGLES DU JEU
+Voici les règles qui régissent le jeu:
+* le personnage principal creuse la terre en explorant la grotte
+* le personnage principal peut pousser les pierres se trouvant à sa gauche et à sa droite
+* les murs sont infranchissables, mais certains peuvent être destruits par une explosion
+* certains murs sont magiques; ils sont perméables aux pierres et laissent tomber un diamant quand une de ces dernières le franchit
+* une pierre peut tomber à sa gauche ou à sa droite si aucun obstacle ne se trouve sur son chemin
+* si une pierre ou un diamant tombe sur le héros, celui-ci meurt
+* les monstres mangent le héros s'ils le rencontrent
+* quand une explosion se produit, elle se propage dans les cases adjacentes avec une force décroissante, tuant les monstres au passage et pouvant laisser derrière eux des diamants
+* la porte de sortie apparaît quand le nombre minimal de diamants (présents dans le niveau) est atteint
 
-This file is a basic implementation of the "Boulder Dash" video game (1984) within the IODA NetLogo extension.
+## COMMENT L'UTILISER?
+Sélectionnez le niveau "0", et cliquez sur **`setup`** puis **`go`**.
+Une fois un niveau franchi, le suivant est sélectionné automatiquement.
 
-## HOW IT WORKS
+## LES NIVEAUX
+Il y a 10 niveaux en tout. TODO
 
-A cave is initialized in the setup procedure. The main character has to dig the dirt to collect all diamonds initially present without being killed by monsters or falling rocks or diamonds. Agents can move only in their von Neumann neighborhood (4 neighbors). When all diamonds have been collected, the hero must reach the exit that appears in the cave.
+## COMMENT CRÉER UN NOUVEAU NIVEAU?
+Vous avez besoin d'un fichier texte présent dans le répertoire *level* sous la forme : *levelX.txt", où X est un entier suivant le nombre de niveaux déjà présents.
+Vous pouvez créer les différents agents via ces caractères ASCII:
 
+* H : héros du jeu
+* M : monstre
+* W : mur magique
+* O : porte de sortie
+* R : pierre
+* . : sable
+* D : diamant
+* X : mur non-destructible
+* x : mur destructible
 
-## HOW TO USE IT
+Les 2 premières lignes du fichier concerne la taille du niveau en longueur et en largeur (1ère ligne), et le nombre minimal de diamants à recueillir pour terminer celui-ci (2ème ligne).
 
-You just have to click on **`setup`**, then on **`go`**. Your aim is to endow the character and the other agents with a better behavior than the initial one.
+## A PROPOS DES AGENTS
+* Héros : L'automatisation du héros se réalise d'une manière proche de celle du modèle du jeu 'rescue the princess' du tutoriel IODA. Le héros à deux buts principaux dans l'ordre de priorité suivant, se diriger vers une porte ouverte et récupérer des diamants pour ouvrir la porte.
+Pour pouvoir atteindre ses buts, une simple carte des distances est réalisée par l'algorithme de dijkstra.
+Ensuite pour avoir un comportement un peu intelligent, les dangers comme les monstres, les explosions et les chutes de pierres ou de diamants agissent comme répulseurs et augmentent la valeur de la carte des distances de façon spécifique à l'agent. Un monstre a un effet répulseur sur les cases situées dans sa direction, ainsi qu'autour de lui et les objets qui tombent ont un effet répulseurs sur les cases situées sous eux.
+* Explosives : Les bombes sont déposées par le héros si une case en dessous de lui est libre.
+* Magicwalls : Les murs magiques sont destructibles et ils transforment les pierres qui tombent en diamants et inversement.
+* Flags et flags : TODO
 
-
-## HOW TO CITE
+## CONCERNANT L'APPROCHE IODA...
 
   * The **IODA methodology and simulation algorithms** (i.e. what is actually in use in this NetLogo extension):
 Y. KUBERA, P. MATHIEU and S. PICAULT (2011), "IODA: an interaction-oriented approach for multi-agent based simulations", in: _Journal of Autonomous Agents and Multi-Agent Systems (JAAMAS)_, vol. 23 (3), p. 303-343, Springer DOI: 10.1007/s10458-010-9164-z.
@@ -1188,19 +1222,21 @@ U. WILENSKY (1999), NetLogo. http://ccl.northwestern.edu/netlogo Center for Conn
 
 ## COPYRIGHT NOTICE
 
+A project by Quentin BAERT and Antonin CARETTE
 All contents &copy; 2008-2015 Sébastien PICAULT and Philippe MATHIEU
 Centre de Recherche en Informatique, Signal et Automatique de Lille (CRIStAL)
 UMR CNRS 9189 -- Université de Lille (Sciences et Technologies)
 Cité Scientifique, F-59655 Villeneuve d'Ascq Cedex, FRANCE.
 Web Site: http://www.lifl.fr/SMAC/projects/ioda
 
-![SMAC team](file:../../doc/images/small-smac.png) &nbsp;&nbsp;&nbsp;  ![CRIStAL](file:../../doc/images/small-cristal.png) &nbsp;&nbsp;&nbsp; ![CNRS](file:../../doc/images/small-cnrs.png) &nbsp;&nbsp;&nbsp;  ![Université de Lille](file:../../doc/images/small-UL1.png)
+![SMAC team](file:../../doc/images/small-smac.png) &nbsp;&nbsp;&nbsp;  ![CRIStAL](file:../../doc/images/small-cristal.png) &nbsp;&nbsp;&nbsp; ![CNRS](file:../../doc/images/small-cnrs.png) &nbsp;&nbsp;&nbsp;  ![Université de Lille](file:../../doc/images/small-UL1.png)
 
 The IODA NetLogo extension is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 IODA NetLogo extension is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with the IODA NetLogo extension. If not, see http://www.gnu.org/licenses.
+@#$#@#$#@
 @#$#@#$#@
 default
 true
