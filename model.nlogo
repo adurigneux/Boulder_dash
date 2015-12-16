@@ -842,8 +842,8 @@ end
 GRAPHICS-WINDOW
 482
 10
-727
-221
+1032
+581
 -1
 -1
 36.0
@@ -857,8 +857,8 @@ GRAPHICS-WINDOW
 0
 1
 0
-4
--4
+14
+-14
 0
 1
 1
@@ -1030,7 +1030,7 @@ CHOOSER
 level
 level
 "level0" "level1" "level2" "level3" "level4" "level5" "level6" "level7" "level8" "level9"
-0
+7
 
 MONITOR
 287
@@ -1076,7 +1076,7 @@ OUTPUT
 617
 461
 743
-11
+12
 
 INPUTBOX
 25
@@ -1180,12 +1180,38 @@ Voici les règles qui régissent le jeu:
 * quand une explosion se produit, elle se propage dans les cases adjacentes avec une force décroissante, tuant les monstres au passage et pouvant laisser derrière eux des diamants
 * la porte de sortie apparaît quand le nombre minimal de diamants (présents dans le niveau) est atteint
 
-## COMMENT L'UTILISER?
+## A PROPOS DES AGENTS
+* Héros : L'automatisation du héros se réalise d'une manière proche de celle du modèle du jeu 'rescue the princess' du tutoriel IODA. Le héros à deux buts principaux dans l'ordre de priorité suivant, se diriger vers une porte ouverte et récupérer des diamants pour ouvrir la porte.
+Pour pouvoir atteindre ses buts, une simple carte des distances est réalisée par l'algorithme de dijkstra.
+Ensuite pour avoir un comportement un peu intelligent, les dangers comme les monstres, les explosions et les chutes de pierres ou de diamants agissent comme répulseurs et augmentent la valeur de la carte des distances de façon spécifique à l'agent. Un monstre a un effet répulseur sur les cases situées dans sa direction, ainsi qu'autour de lui et les objets qui tombent ont un effet répulseurs sur les cases situées sous eux.
+* Explosives : Les bombes sont déposées par le héros si une case en dessous de lui est libre.
+* Magicwalls : Les murs magiques sont destructibles et ils transforment les pierres qui tombent en diamants et inversement.
+* Flags : Les drapeaux peuvent être pris par un héros lors de son passage sur la case, il doit être déposé sur une cible après avoir récolté tous les diamants
+* Targets : Les cibles sont utilisées pour déposer les drapeaux
+
+## COMMENT UTILISER LE JEU?
 Sélectionnez le niveau "0", et cliquez sur **`setup`** puis **`go`**.
 Une fois un niveau franchi, le suivant est sélectionné automatiquement.
 
+## INTERFACE DE JEU
+Dans l'interface, l'utilisateur peut choisir plusieurs paramètres de jeu :
+* Le bouton SetIA qui permet d'activer ou non l'intelligence artificielle du héros
+* Le bouton show Dijkstra qui permet d'activer ou non l'affichage de la carte des distances selon l'algorithme de Dijkstra
+* Le champ de saisie limit-time-explosive qui permet de déterminer la durée de vie des explosifs que le héros dépose avant que ceux-ci n'explosent
+* Le bouton Drop explosive qui permet au héros de déposer des explosives sur la carte (raccourci clavier B)
+
 ## LES NIVEAUX
-Il y a 10 niveaux en tout. TODO
+Il y a 10 niveaux en tout :
+* Niveau 0 : Niveau de base pour tester les déplacements du héros
+* Niveau 1 : Premier grand niveau avec monstres
+* Niveau 2 : Même niveau que le 1 sans le sable
+* Niveau 3 : Premier niveau équipé d'un mur magique qui transforme une pierre en diamant
+* Niveau 4 : Premier niveau développé pour tester l'intelligence artificielle du héros
+* Niveau 5 : Premier niveau équipé de nos agents cibles et drapeaux
+* Niveau 6 : Niveau pour tester la récupération de diamants par l'intelligence artificielle
+* Niveau 7 : Niveau où des pierres tuent des monstres dans le but de générer des diamants. L'IA doit également récupérer le drapeau pour le mettre sur la cible avant de finir le niveau.
+* Niveau 8 : Niveau équivalent au niveau 7 avec rajout de deux nouveaux monstres
+* Niveau 9 : Niveau où beaucoup de pierres tombent vers le héros et ajout de plusieurs monstres
 
 ## COMMENT CRÉER UN NOUVEAU NIVEAU?
 Vous avez besoin d'un fichier texte présent dans le répertoire *level* sous la forme : *levelX.txt", où X est un entier suivant le nombre de niveaux déjà présents.
@@ -1203,14 +1229,6 @@ Vous pouvez créer les différents agents via ces caractères ASCII:
 
 Les 2 premières lignes du fichier concerne la taille du niveau en longueur et en largeur (1ère ligne), et le nombre minimal de diamants à recueillir pour terminer celui-ci (2ème ligne).
 
-## A PROPOS DES AGENTS
-* Héros : L'automatisation du héros se réalise d'une manière proche de celle du modèle du jeu 'rescue the princess' du tutoriel IODA. Le héros à deux buts principaux dans l'ordre de priorité suivant, se diriger vers une porte ouverte et récupérer des diamants pour ouvrir la porte.
-Pour pouvoir atteindre ses buts, une simple carte des distances est réalisée par l'algorithme de dijkstra.
-Ensuite pour avoir un comportement un peu intelligent, les dangers comme les monstres, les explosions et les chutes de pierres ou de diamants agissent comme répulseurs et augmentent la valeur de la carte des distances de façon spécifique à l'agent. Un monstre a un effet répulseur sur les cases situées dans sa direction, ainsi qu'autour de lui et les objets qui tombent ont un effet répulseurs sur les cases situées sous eux.
-* Explosives : Les bombes sont déposées par le héros si une case en dessous de lui est libre.
-* Magicwalls : Les murs magiques sont destructibles et ils transforment les pierres qui tombent en diamants et inversement.
-* Flags et flags : TODO
-
 ## CONCERNANT L'APPROCHE IODA...
 
   * The **IODA methodology and simulation algorithms** (i.e. what is actually in use in this NetLogo extension):
@@ -1222,7 +1240,7 @@ U. WILENSKY (1999), NetLogo. http://ccl.northwestern.edu/netlogo Center for Conn
 
 ## COPYRIGHT NOTICE
 
-A project by Quentin BAERT and Antonin CARETTE
+A project by Antoine DURIGNEUX and Quentin WARNANT
 All contents &copy; 2008-2015 Sébastien PICAULT and Philippe MATHIEU
 Centre de Recherche en Informatique, Signal et Automatique de Lille (CRIStAL)
 UMR CNRS 9189 -- Université de Lille (Sciences et Technologies)
@@ -1237,7 +1255,6 @@ IODA NetLogo extension is distributed in the hope that it will be useful, but WI
 
 You should have received a copy of the GNU General Public License along with the IODA NetLogo extension. If not, see http://www.gnu.org/licenses.
 @#$#@#$#@
-
 default
 true
 0
