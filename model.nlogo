@@ -842,8 +842,8 @@ end
 GRAPHICS-WINDOW
 482
 10
-1032
-581
+727
+221
 -1
 -1
 36.0
@@ -857,8 +857,8 @@ GRAPHICS-WINDOW
 0
 1
 0
-14
--14
+4
+-4
 0
 1
 1
@@ -1030,7 +1030,7 @@ CHOOSER
 level
 level
 "level0" "level1" "level2" "level3" "level4" "level5" "level6" "level7" "level8" "level9"
-7
+0
 
 MONITOR
 287
@@ -1076,7 +1076,7 @@ OUTPUT
 617
 461
 743
-12
+11
 
 INPUTBOX
 25
@@ -1178,16 +1178,16 @@ Voici les règles qui régissent le jeu:
 * si une pierre ou un diamant tombe sur le héros, celui-ci meurt
 * les monstres mangent le héros s'ils le rencontrent
 * quand une explosion se produit, elle se propage dans les cases adjacentes avec une force décroissante, tuant les monstres au passage et pouvant laisser derrière eux des diamants
-* la porte de sortie apparaît quand le nombre minimal de diamants (présents dans le niveau) est atteint
+* la porte de sortie apparaît quand le nombre minimal de diamants (présents dans le niveau) est atteint et que tous les drapeaux ont été plantés sur les cibles, si le niveau en possède.
 
 ## A PROPOS DES AGENTS
 * Héros : L'automatisation du héros se réalise d'une manière proche de celle du modèle du jeu 'rescue the princess' du tutoriel IODA. Le héros à deux buts principaux dans l'ordre de priorité suivant, se diriger vers une porte ouverte et récupérer des diamants pour ouvrir la porte.
 Pour pouvoir atteindre ses buts, une simple carte des distances est réalisée par l'algorithme de dijkstra.
 Ensuite pour avoir un comportement un peu intelligent, les dangers comme les monstres, les explosions et les chutes de pierres ou de diamants agissent comme répulseurs et augmentent la valeur de la carte des distances de façon spécifique à l'agent. Un monstre a un effet répulseur sur les cases situées dans sa direction, ainsi qu'autour de lui et les objets qui tombent ont un effet répulseurs sur les cases situées sous eux.
-* Explosives : Les bombes sont déposées par le héros si une case en dessous de lui est libre.
+* Explosives : Les bombes sont déposées par le héros sur la case en dessous de lui et explose apr!s un nombre de ticks donné et défini dans l'interface du jeu. Lors de l'explosion celle-ci detruit son voisinnage, tout en gardant les mêmes conditions qu'une explosions avec un monstres et une pierre, à savoir, destruction de l'environement destructible. L'explosion ne crée pas de diamants.
 * Magicwalls : Les murs magiques sont destructibles et ils transforment les pierres qui tombent en diamants et inversement.
-* Flags : Les drapeaux peuvent être pris par un héros lors de son passage sur la case, il doit être déposé sur une cible après avoir récolté tous les diamants
-* Targets : Les cibles sont utilisées pour déposer les drapeaux
+* Flags : Les drapeaux peuvent être pris par un héros lors de son passage sur la case, il doit être déposé sur une cible après avoir récolté tous les diamants pour finir le niveau
+* Cibles : Les cibles sont utilisées pour déposer les drapeaux
 
 ## COMMENT UTILISER LE JEU?
 Sélectionnez le niveau "0", et cliquez sur **`setup`** puis **`go`**.
@@ -1226,6 +1226,8 @@ Vous pouvez créer les différents agents via ces caractères ASCII:
 * D : diamant
 * X : mur non-destructible
 * x : mur destructible
+* F : Drapeau (Flag)
+* T : Cible pour drapeau
 
 Les 2 premières lignes du fichier concerne la taille du niveau en longueur et en largeur (1ère ligne), et le nombre minimal de diamants à recueillir pour terminer celui-ci (2ème ligne).
 
